@@ -1,0 +1,39 @@
+@model IEnumerable<StudyRoom.Models.Room>
+
+@{
+    ViewData["Title"] = "Rom";
+}
+
+<h1>Studierom</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Legg til nytt rom</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Navn</th>
+            <th>Bygning</th>
+            <th>Kapasitet</th>
+            <th>Utstyr</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var room in Model)
+        {
+            <tr>
+                <td>@room.Name</td>
+                <td>@room.Building</td>
+                <td>@room.Capacity</td>
+                <td>@room.Equipment</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@room.Id">Detaljer</a> |
+                    <a asp-action="Edit" asp-route-id="@room.Id">Rediger</a> |
+                    <a asp-action="Delete" asp-route-id="@room.Id">Slett</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,27 @@
+@model StudyRoom.Models.Room
+
+@{
+    ViewData["Title"] = "Slett rom";
+}
+
+<h1>Er du sikker på at du vil slette dette rommet?</h1>
+
+<dl class="row">
+    <dt class="col-sm-2">Navn</dt>
+    <dd class="col-sm-10">@Model.Name</dd>
+
+    <dt class="col-sm-2">Bygning</dt>
+    <dd class="col-sm-10">@Model.Building</dd>
+
+    <dt class="col-sm-2">Kapasitet</dt>
+    <dd class="col-sm-10">@Model.Capacity</dd>
+
+    <dt class="col-sm-2">Utstyr</dt>
+    <dd class="col-sm-10">@Model.Equipment</dd>
+</dl>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Id" />
+    <input type="submit" value="Slett" class="btn btn-danger" /> |
+    <a asp-action="Index">Avbryt</a>
+</form>
