@@ -41,4 +41,17 @@ app.MapControllerRoute(
     .WithStaticAssets();
 
 
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+    if (app.Environment.IsDevelopment())
+    {
+        context.StudySessions.RemoveRange(context.StudySessions);
+        context.SaveChanges();
+    }
+
+    DbInitializer.Seed(context);
+}
+
 app.Run();

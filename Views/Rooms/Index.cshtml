@@ -11,29 +11,31 @@
 </p>
 
 <table class="table">
-    <thead>
+   <thead>
+    <tr>
+        <th>Navn</th>
+        <th>Bygning</th>
+        <th>Romtype</th>
+        <th>Kapasitet</th>
+        <th>Utstyr</th>
+        <th></th>
+    </tr>
+</thead>
+<tbody>
+    @foreach (var room in Model)
+    {
         <tr>
-            <th>Navn</th>
-            <th>Bygning</th>
-            <th>Kapasitet</th>
-            <th>Utstyr</th>
-            <th></th>
+            <td>@room.Name</td>
+            <td>@room.Building</td>
+            <td>@room.RoomType</td>
+            <td>@room.Capacity</td>
+            <td>@room.Equipment</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@room.Id">Detaljer</a> |
+                <a asp-action="Edit" asp-route-id="@room.Id">Rediger</a> |
+                <a asp-action="Delete" asp-route-id="@room.Id">Slett</a>
+            </td>
         </tr>
-    </thead>
-    <tbody>
-        @foreach (var room in Model)
-        {
-            <tr>
-                <td>@room.Building</td>
-                <td>@room.RoomType</td>
-                <td>@room.Capacity</td>
-                <td>@room.Equipment</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@room.Id">Detaljer</a> |
-                    <a asp-action="Edit" asp-route-id="@room.Id">Rediger</a> |
-                    <a asp-action="Delete" asp-route-id="@room.Id">Slett</a>
-                </td>
-            </tr>
-        }
-    </tbody>
+    }
+</tbody>
 </table>
