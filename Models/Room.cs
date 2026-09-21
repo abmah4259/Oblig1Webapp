@@ -10,15 +10,12 @@ namespace StudyRoom.Models
         [StringLength(100)]
         public string Name { get; set; } = string.Empty;
 
-        [Required]
-        [StringLength(100)]
-        public string Building { get; set; } = string.Empty;
+        public Building Building { get; set; }
+        public RoomType RoomType { get; set; }
+        public Equipment Equipment { get; set; }
 
-        [Range(1, 500)]
+        [Range(1, 100)]
         public int Capacity { get; set; }
-
-        [StringLength(200)]
-        public string? Equipment { get; set; }
 
         public ICollection<StudySession> StudySessions { get; set; } = new List<StudySession>();
     }

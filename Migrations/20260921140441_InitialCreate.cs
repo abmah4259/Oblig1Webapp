@@ -17,9 +17,10 @@ namespace StudyRoom.Migrations
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    Building = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    Capacity = table.Column<int>(type: "INTEGER", nullable: false),
-                    Equipment = table.Column<string>(type: "TEXT", maxLength: 200, nullable: true)
+                    Building = table.Column<int>(type: "INTEGER", nullable: false),
+                    RoomType = table.Column<int>(type: "INTEGER", nullable: false),
+                    Equipment = table.Column<int>(type: "INTEGER", nullable: false),
+                    Capacity = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {

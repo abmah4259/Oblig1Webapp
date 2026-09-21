@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("StudyRoom")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+316d58e28d07cfd34b1ea8ab23a5fe6867c3b9b3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d67105a723e3b5dd483c683cff31f128d0452995")]
 [assembly: System.Reflection.AssemblyProductAttribute("StudyRoom")]
 [assembly: System.Reflection.AssemblyTitleAttribute("StudyRoom")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using StudyRoom.Models;
 using StudyRoom.Repositories;
@@ -34,20 +36,36 @@ namespace StudyRoom.Controllers
         // GET: Rooms/Create
         public IActionResult Create()
         {
+            PopulateEnumViewBags();
             return View();
         }
 
         // POST: Rooms/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Building,Capacity,Equipment")] Room room)
+        public async Task<IActionResult> Create([Bind("Name,Building,RoomType,Capacity")] Room room, Equipment[] selectedEquipment)
         {
+            var allRooms = await _roomRepository.GetAllAsync();
+            if (allRooms.Count() >= 10)
+            {
+                ModelState.AddModelError(string.Empty, "Maks antall rom (10) er allerede nådd.");
+            }
+
+            var combinedEquipment = CombineEquipment(selectedEquipment);
+            if (!RoomRules.IsValidCombination(room.Building, room.RoomType, combinedEquipment))
+            {
+                ModelState.AddModelError(string.Empty, "Ugyldig kombinasjon av bygg, romtype og utstyr.");
+            }
+
             if (!ModelState.IsValid)
             {
+                PopulateEnumViewBags();
                 return View(room);
             }
 
             room.Id = Guid.NewGuid();
+            room.Equipment = combinedEquipment;
+
             await _roomRepository.AddAsync(room);
             await _roomRepository.SaveChangesAsync();
 
@@ -62,23 +80,33 @@ namespace StudyRoom.Controllers
             {
                 return NotFound();
             }
+            PopulateEnumViewBags();
             return View(room);
         }
 
         // POST: Rooms/Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Building,Capacity,Equipment")] Room room)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Building,RoomType,Capacity")] Room room, Equipment[] selectedEquipment)
         {
             if (id != room.Id)
             {
                 return NotFound();
             }
 
+            var combinedEquipment = CombineEquipment(selectedEquipment);
+            if (!RoomRules.IsValidCombination(room.Building, room.RoomType, combinedEquipment))
+            {
+                ModelState.AddModelError(string.Empty, "Ugyldig kombinasjon av bygg, romtype og utstyr.");
+            }
+
             if (!ModelState.IsValid)
             {
+                PopulateEnumViewBags();
                 return View(room);
             }
+
+            room.Equipment = combinedEquipment;
 
             _roomRepository.Update(room);
             await _roomRepository.SaveChangesAsync();
@@ -109,6 +137,34 @@ namespace StudyRoom.Controllers
                 await _roomRepository.SaveChangesAsync();
             }
             return RedirectToAction(nameof(Index));
+        }
+
+        private void PopulateEnumViewBags()
+    {
+        ViewBag.Buildings = Enum.GetValues(typeof(Building));
+        ViewBag.RoomTypes = Enum.GetValues(typeof(RoomType));
+        ViewBag.EquipmentOptions = Enum.GetValues(typeof(Equipment))
+            .Cast<Equipment>()
+            .Where(e => e != Equipment.None);
+
+        ViewBag.RoomTypeRulesJson = JsonSerializer.Serialize(
+            RoomRules.AllowedRoomTypes.ToDictionary(
+                kv => ((int)kv.Key).ToString(),
+                kv => kv.Value.Select(v => ((int)v).ToString())));
+
+        ViewBag.EquipmentRulesJson = JsonSerializer.Serialize(
+            RoomRules.AllowedEquipment.ToDictionary(
+                kv => ((int)kv.Key).ToString(),
+                kv => kv.Value.Select(v => v.ToString())));
+    }
+        private static Equipment CombineEquipment(Equipment[] selected)
+        {
+            var combined = Equipment.None;
+            foreach (var item in selected)
+            {
+                combined |= item;
+            }
+            return combined;
         }
     }
 }

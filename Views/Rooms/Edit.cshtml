@@ -15,23 +15,37 @@
         <input asp-for="Name" class="form-control" />
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
+
     <div class="form-group">
         <label asp-for="Building" class="control-label"></label>
-        <input asp-for="Building" class="form-control" />
-        <span asp-validation-for="Building" class="text-danger"></span>
+        <select asp-for="Building" class="form-control" asp-items="Html.GetEnumSelectList<StudyRoom.Models.Building>()"></select>
     </div>
+
+    <div class="form-group">
+        <label asp-for="RoomType" class="control-label"></label>
+        <select asp-for="RoomType" class="form-control" asp-items="Html.GetEnumSelectList<StudyRoom.Models.RoomType>()"></select>
+    </div>
+
     <div class="form-group">
         <label asp-for="Capacity" class="control-label"></label>
-        <input asp-for="Capacity" class="form-control" />
+        <input asp-for="Capacity" type="number" min="1" max="100" class="form-control" id="capacityInput" />
         <span asp-validation-for="Capacity" class="text-danger"></span>
     </div>
+
     <div class="form-group">
-        <label asp-for="Equipment" class="control-label"></label>
-        <input asp-for="Equipment" class="form-control" />
-        <span asp-validation-for="Equipment" class="text-danger"></span>
+        <label>Utstyr</label>
+        @foreach (var eq in (IEnumerable<StudyRoom.Models.Equipment>)ViewBag.EquipmentOptions)
+        {
+            var isChecked = Model.Equipment.HasFlag(eq);
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" name="selectedEquipment" value="@eq" id="eq_@eq" checked="@isChecked" />
+                <label class="form-check-label" for="eq_@eq">@eq</label>
+            </div>
+        }
     </div>
+
     <div class="form-group mt-3">
-        <input type="submit" value="Lagre" class="btn btn-primary" />
+        <input type="submit" value="Lagre" class="btn btn-primary" id="submitBtn" />
     </div>
 </form>
 
@@ -39,4 +53,16 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        const capacityInput = document.getElementById('capacityInput');
+        const submitBtn = document.getElementById('submitBtn');
+
+        function validateCapacity() {
+            const value = parseInt(capacityInput.value, 10);
+            submitBtn.disabled = isNaN(value) || value < 1 || value > 100;
+        }
+
+        capacityInput.addEventListener('input', validateCapacity);
+        validateCapacity();
+    </script>
 }

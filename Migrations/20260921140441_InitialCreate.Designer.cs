@@ -11,7 +11,7 @@ using StudyRoom.Data;
 namespace StudyRoom.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260921124319_InitialCreate")]
+    [Migration("20260921140441_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -79,22 +79,22 @@ namespace StudyRoom.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Building")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Building")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("Capacity")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Equipment")
-                        .HasMaxLength(200)
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Equipment")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("RoomType")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
