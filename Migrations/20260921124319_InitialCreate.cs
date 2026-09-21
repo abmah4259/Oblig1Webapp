@@ -12,7 +12,7 @@ namespace StudyRoom.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Room",
+                name: "Rooms",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
@@ -23,11 +23,11 @@ namespace StudyRoom.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Room", x => x.Id);
+                    table.PrimaryKey("PK_Rooms", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Student",
+                name: "Students",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
@@ -39,7 +39,7 @@ namespace StudyRoom.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Student", x => x.Id);
+                    table.PrimaryKey("PK_Students", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -59,93 +59,91 @@ namespace StudyRoom.Migrations
                 {
                     table.PrimaryKey("PK_StudySessions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_StudySessions_Room_RoomId",
+                        name: "FK_StudySessions_Rooms_RoomId",
                         column: x => x.RoomId,
-                        principalTable: "Room",
+                        principalTable: "Rooms",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_StudySessions_Student_HostId",
+                        name: "FK_StudySessions_Students_HostId",
                         column: x => x.HostId,
-                        principalTable: "Student",
+                        principalTable: "Students",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Message",
+                name: "Messages",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     SessionId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    StudySessionId = table.Column<Guid>(type: "TEXT", nullable: false),
                     StudentId = table.Column<Guid>(type: "TEXT", nullable: false),
                     Content = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: false),
                     PostedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Message", x => x.Id);
+                    table.PrimaryKey("PK_Messages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Message_Student_StudentId",
+                        name: "FK_Messages_Students_StudentId",
                         column: x => x.StudentId,
-                        principalTable: "Student",
+                        principalTable: "Students",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Message_StudySessions_StudySessionId",
-                        column: x => x.StudySessionId,
+                        name: "FK_Messages_StudySessions_SessionId",
+                        column: x => x.SessionId,
                         principalTable: "StudySessions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Participation",
+                name: "Participations",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     StudentId = table.Column<Guid>(type: "TEXT", nullable: false),
                     SessionId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    StudySessionId = table.Column<Guid>(type: "TEXT", nullable: false),
                     JoinedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Participation", x => x.Id);
+                    table.PrimaryKey("PK_Participations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Participation_Student_StudentId",
+                        name: "FK_Participations_Students_StudentId",
                         column: x => x.StudentId,
-                        principalTable: "Student",
+                        principalTable: "Students",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Participation_StudySessions_StudySessionId",
-                        column: x => x.StudySessionId,
+                        name: "FK_Participations_StudySessions_SessionId",
+                        column: x => x.SessionId,
                         principalTable: "StudySessions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Message_StudentId",
-                table: "Message",
+                name: "IX_Messages_SessionId",
+                table: "Messages",
+                column: "SessionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_StudentId",
+                table: "Messages",
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Message_StudySessionId",
-                table: "Message",
-                column: "StudySessionId");
+                name: "IX_Participations_SessionId",
+                table: "Participations",
+                column: "SessionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Participation_StudentId",
-                table: "Participation",
+                name: "IX_Participations_StudentId",
+                table: "Participations",
                 column: "StudentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Participation_StudySessionId",
-                table: "Participation",
-                column: "StudySessionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StudySessions_HostId",
@@ -162,19 +160,19 @@ namespace StudyRoom.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Message");
+                name: "Messages");
 
             migrationBuilder.DropTable(
-                name: "Participation");
+                name: "Participations");
 
             migrationBuilder.DropTable(
                 name: "StudySessions");
 
             migrationBuilder.DropTable(
-                name: "Room");
+                name: "Rooms");
 
             migrationBuilder.DropTable(
-                name: "Student");
+                name: "Students");
         }
     }
 }

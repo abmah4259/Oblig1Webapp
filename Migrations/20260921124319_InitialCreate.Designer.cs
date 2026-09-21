@@ -11,7 +11,7 @@ using StudyRoom.Data;
 namespace StudyRoom.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260921123423_InitialCreate")]
+    [Migration("20260921124319_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -40,16 +40,13 @@ namespace StudyRoom.Migrations
                     b.Property<Guid>("StudentId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("StudySessionId")
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("SessionId");
 
                     b.HasIndex("StudentId");
 
-                    b.HasIndex("StudySessionId");
-
-                    b.ToTable("Message");
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("StudyRoom.Models.Participation", b =>
@@ -67,16 +64,13 @@ namespace StudyRoom.Migrations
                     b.Property<Guid>("StudentId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("StudySessionId")
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("SessionId");
 
                     b.HasIndex("StudentId");
 
-                    b.HasIndex("StudySessionId");
-
-                    b.ToTable("Participation");
+                    b.ToTable("Participations");
                 });
 
             modelBuilder.Entity("StudyRoom.Models.Room", b =>
@@ -104,7 +98,7 @@ namespace StudyRoom.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Room");
+                    b.ToTable("Rooms");
                 });
 
             modelBuilder.Entity("StudyRoom.Models.Student", b =>
@@ -138,7 +132,7 @@ namespace StudyRoom.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Student");
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("StudyRoom.Models.StudySession", b =>
@@ -182,16 +176,16 @@ namespace StudyRoom.Migrations
 
             modelBuilder.Entity("StudyRoom.Models.Message", b =>
                 {
-                    b.HasOne("StudyRoom.Models.Student", "Student")
+                    b.HasOne("StudyRoom.Models.StudySession", "StudySession")
                         .WithMany("Messages")
-                        .HasForeignKey("StudentId")
+                        .HasForeignKey("SessionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("StudyRoom.Models.StudySession", "StudySession")
+                    b.HasOne("StudyRoom.Models.Student", "Student")
                         .WithMany("Messages")
-                        .HasForeignKey("StudySessionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Student");
@@ -201,16 +195,16 @@ namespace StudyRoom.Migrations
 
             modelBuilder.Entity("StudyRoom.Models.Participation", b =>
                 {
-                    b.HasOne("StudyRoom.Models.Student", "Student")
+                    b.HasOne("StudyRoom.Models.StudySession", "StudySession")
                         .WithMany("Participations")
-                        .HasForeignKey("StudentId")
+                        .HasForeignKey("SessionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("StudyRoom.Models.StudySession", "StudySession")
+                    b.HasOne("StudyRoom.Models.Student", "Student")
                         .WithMany("Participations")
-                        .HasForeignKey("StudySessionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Student");
@@ -223,13 +217,13 @@ namespace StudyRoom.Migrations
                     b.HasOne("StudyRoom.Models.Student", "Host")
                         .WithMany("HostedSessions")
                         .HasForeignKey("HostId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("StudyRoom.Models.Room", "Room")
                         .WithMany("StudySessions")
                         .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Host");
