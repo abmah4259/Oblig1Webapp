@@ -20,12 +20,12 @@ namespace StudyRoom.Services
 
         public async Task<IEnumerable<StudySession>> GetAllAsync()
         {
-            return await _sessionRepository.GetAllAsync();
+            return await _sessionRepository.GetAllWithDetailsAsync();
         }
 
         public async Task<StudySession?> GetByIdAsync(Guid id)
         {
-            return await _sessionRepository.GetByIdAsync(id);
+            return await _sessionRepository.GetByIdWithDetailsAsync(id);
         }
 
         public async Task<(bool Success, string? ErrorMessage)> CreateAsync(StudySession session)

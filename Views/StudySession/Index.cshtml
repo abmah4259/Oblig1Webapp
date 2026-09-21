@@ -1,0 +1,55 @@
+@model IEnumerable<StudyRoom.Models.StudySession>
+
+@{
+    ViewData["Title"] = "Studieøkter";
+}
+
+<h1>Studieøkter</h1>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Book en studieøkt</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Emne</th>
+            <th>Tema</th>
+            <th>Rom</th>
+            <th>Start</th>
+            <th>Slutt</th>
+            <th>Vert</th>
+            <th>Maks deltakere</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var session in Model)
+        {
+            <tr>
+                <td>@session.Subject</td>
+                <td>@session.Topic</td>
+                <td>@session.Room.Name</td>
+                <td>@session.StartTime.ToString("dd.MM.yyyy HH:mm")</td>
+                <td>@session.EndTime.ToString("dd.MM.yyyy HH:mm")</td>
+                <td>@session.Host.FirstName @session.Host.LastName</td>
+                <td>@session.MaxParticipants</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@session.Id">Detaljer</a>
+                    @if (ViewBag.CurrentStudentId != null && session.HostId == (Guid)ViewBag.CurrentStudentId)
+                    {
+                        <text> | </text>
+                        <a asp-action="Edit" asp-route-id="@session.Id">Endre</a>
+                        <text> | </text>
+                        <a asp-action="Delete" asp-route-id="@session.Id">Slett</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

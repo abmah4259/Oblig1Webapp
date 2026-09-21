@@ -1,0 +1,26 @@
+@model StudyRoom.Models.StudySession
+
+@{
+    ViewData["Title"] = "Kanseller booking";
+}
+
+<h1>Kanseller booking</h1>
+
+<p>Er du sikker på at du vil kansellere denne bookingen?</p>
+
+<dl class="row">
+    <dt class="col-sm-3">Emne</dt>
+    <dd class="col-sm-9">@Model.Subject</dd>
+
+    <dt class="col-sm-3">Rom</dt>
+    <dd class="col-sm-9">@Model.Room.Name</dd>
+
+    <dt class="col-sm-3">Start</dt>
+    <dd class="col-sm-9">@Model.StartTime.ToString("dd.MM.yyyy HH:mm")</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Kanseller booking</button>
+    <a asp-action="Index" class="btn btn-secondary">Avbryt</a>
+</form>

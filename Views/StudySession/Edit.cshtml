@@ -1,0 +1,49 @@
+@model StudyRoom.Models.StudySession
+
+@{
+    ViewData["Title"] = "Endre studieøkt";
+}
+
+<h1>Endre studieøkt</h1>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group">
+        <label>Rom</label>
+        <select asp-for="RoomId" asp-items="ViewBag.Rooms" class="form-control"></select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Subject"></label>
+        <input asp-for="Subject" class="form-control" />
+        <span asp-validation-for="Subject" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Topic"></label>
+        <input asp-for="Topic" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="StartTime"></label>
+        <input asp-for="StartTime" class="form-control" type="datetime-local" />
+        <span asp-validation-for="StartTime" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="EndTime"></label>
+        <input asp-for="EndTime" class="form-control" type="datetime-local" />
+        <span asp-validation-for="EndTime" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MaxParticipants"></label>
+        <input asp-for="MaxParticipants" class="form-control" type="number" min="1" />
+        <span asp-validation-for="MaxParticipants" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lagre</button>
+    <a asp-action="Index" class="btn btn-secondary">Avbryt</a>
+</form>

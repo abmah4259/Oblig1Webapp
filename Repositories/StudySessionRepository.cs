@@ -10,6 +10,22 @@ namespace StudyRoom.Repositories
         {
         }
 
+        public async Task<IEnumerable<StudySession>> GetAllWithDetailsAsync()
+        {
+            return await _dbSet
+                .Include(s => s.Room)
+                .Include(s => s.Host)
+                .ToListAsync();
+        }
+
+        public async Task<StudySession?> GetByIdWithDetailsAsync(Guid id)
+        {
+            return await _dbSet
+                .Include(s => s.Room)
+                .Include(s => s.Host)
+                .FirstOrDefaultAsync(s => s.Id == id);
+        }
+
         public async Task<IEnumerable<StudySession>> GetSessionsByRoomAsync(Guid roomId)
         {
             return await _dbSet
