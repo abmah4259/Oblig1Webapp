@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudyRoom.Models;
 using StudyRoom.Repositories;
@@ -34,6 +35,7 @@ namespace StudyRoom.Controllers
         }
 
         // GET: Rooms/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             PopulateEnumViewBags();
@@ -41,6 +43,7 @@ namespace StudyRoom.Controllers
         }
 
         // POST: Rooms/Create
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Building,RoomType,Capacity")] Room room, Equipment[] selectedEquipment)
@@ -73,6 +76,7 @@ namespace StudyRoom.Controllers
         }
 
         // GET: Rooms/Edit/{id}
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(Guid id)
         {
             var room = await _roomRepository.GetByIdAsync(id);
@@ -85,6 +89,7 @@ namespace StudyRoom.Controllers
         }
 
         // POST: Rooms/Edit/{id}
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Building,RoomType,Capacity")] Room room, Equipment[] selectedEquipment)
@@ -115,6 +120,7 @@ namespace StudyRoom.Controllers
         }
 
         // GET: Rooms/Delete/{id}
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var room = await _roomRepository.GetByIdAsync(id);
@@ -126,6 +132,7 @@ namespace StudyRoom.Controllers
         }
 
         // POST: Rooms/Delete/{id}
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
@@ -140,23 +147,24 @@ namespace StudyRoom.Controllers
         }
 
         private void PopulateEnumViewBags()
-    {
-        ViewBag.Buildings = Enum.GetValues(typeof(Building));
-        ViewBag.RoomTypes = Enum.GetValues(typeof(RoomType));
-        ViewBag.EquipmentOptions = Enum.GetValues(typeof(Equipment))
-            .Cast<Equipment>()
-            .Where(e => e != Equipment.None);
+        {
+            ViewBag.Buildings = Enum.GetValues(typeof(Building));
+            ViewBag.RoomTypes = Enum.GetValues(typeof(RoomType));
+            ViewBag.EquipmentOptions = Enum.GetValues(typeof(Equipment))
+                .Cast<Equipment>()
+                .Where(e => e != Equipment.None);
 
-        ViewBag.RoomTypeRulesJson = JsonSerializer.Serialize(
-            RoomRules.AllowedRoomTypes.ToDictionary(
-                kv => ((int)kv.Key).ToString(),
-                kv => kv.Value.Select(v => ((int)v).ToString())));
+            ViewBag.RoomTypeRulesJson = JsonSerializer.Serialize(
+                RoomRules.AllowedRoomTypes.ToDictionary(
+                    kv => ((int)kv.Key).ToString(),
+                    kv => kv.Value.Select(v => ((int)v).ToString())));
 
-        ViewBag.EquipmentRulesJson = JsonSerializer.Serialize(
-            RoomRules.AllowedEquipment.ToDictionary(
-                kv => ((int)kv.Key).ToString(),
-                kv => kv.Value.Select(v => v.ToString())));
-    }
+            ViewBag.EquipmentRulesJson = JsonSerializer.Serialize(
+                RoomRules.AllowedEquipment.ToDictionary(
+                    kv => ((int)kv.Key).ToString(),
+                    kv => kv.Value.Select(v => v.ToString())));
+        }
+
         private static Equipment CombineEquipment(Equipment[] selected)
         {
             var combined = Equipment.None;

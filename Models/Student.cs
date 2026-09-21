@@ -18,8 +18,12 @@ namespace StudyRoom.Models
         [EmailAddress]
         public string Email { get; set; } = string.Empty;
 
+       // [Required]
+        //Fjerner Denne linjen fra student.cs
+      //  public string PasswordHash { get; set; } = string.Empty;
+
         [Required]
-        public string PasswordHash { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
 
         [Required]
         [StringLength(20)]
