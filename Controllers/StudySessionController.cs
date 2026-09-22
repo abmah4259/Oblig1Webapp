@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Logging;
 using StudyRoom.Models;
 using StudyRoom.Repositories;
 using StudyRoom.Services;
@@ -14,17 +15,20 @@ namespace StudyRoom.Controllers
         private readonly IRepository<Room> _roomRepository;
         private readonly IRepository<Student> _studentRepository;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly ILogger<StudySessionController> _logger;
 
         public StudySessionController(
             IStudySessionService sessionService,
             IRepository<Room> roomRepository,
             IRepository<Student> studentRepository,
-            UserManager<IdentityUser> userManager)
+            UserManager<IdentityUser> userManager,
+            ILogger<StudySessionController> logger)
         {
             _sessionService = sessionService;
             _roomRepository = roomRepository;
             _studentRepository = studentRepository;
             _userManager = userManager;
+            _logger = logger;
         }
 
         // GET: StudySession
@@ -71,6 +75,13 @@ namespace StudyRoom.Controllers
 
             if (!ModelState.IsValid)
             {
+                foreach (var entry in ModelState)
+                {
+                    foreach (var error in entry.Value.Errors)
+                    {
+                        _logger.LogWarning("ModelState-feil for felt '{Field}': {Error}", entry.Key, error.ErrorMessage);
+                    }
+                }
                 await PopulateRoomsViewBagAsync(session.RoomId);
                 return View(session);
             }
@@ -138,6 +149,13 @@ namespace StudyRoom.Controllers
 
             if (!ModelState.IsValid)
             {
+                foreach (var entry in ModelState)
+                {
+                    foreach (var error in entry.Value.Errors)
+                    {
+                        _logger.LogWarning("ModelState-feil for felt '{Field}': {Error}", entry.Key, error.ErrorMessage);
+                    }
+                }
                 await PopulateRoomsViewBagAsync(session.RoomId);
                 return View(session);
             }

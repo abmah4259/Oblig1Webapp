@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace StudyRoom.Models
 {
@@ -7,9 +8,13 @@ namespace StudyRoom.Models
         public Guid Id { get; set; }
 
         public Guid RoomId { get; set; }
+
+        [ValidateNever]
         public Room Room { get; set; } = null!;
 
         public Guid HostId { get; set; }
+
+        [ValidateNever]
         public Student Host { get; set; } = null!;
 
         [Required]
@@ -28,7 +33,10 @@ namespace StudyRoom.Models
         [Range(1, 100)]
         public int MaxParticipants { get; set; }
 
+        [ValidateNever]
         public ICollection<Participation> Participations { get; set; } = new List<Participation>();
+
+        [ValidateNever]
         public ICollection<Message> Messages { get; set; } = new List<Message>();
     }
 }

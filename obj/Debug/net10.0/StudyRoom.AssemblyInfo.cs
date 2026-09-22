@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("StudyRoom")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cea3d6eda2f4f4ae999b8033c5fe0e2677ae38d2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4d25b224c8c696f69e08dd1b13e86eae5e9bf428")]
 [assembly: System.Reflection.AssemblyProductAttribute("StudyRoom")]
 [assembly: System.Reflection.AssemblyTitleAttribute("StudyRoom")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
