@@ -2,16 +2,22 @@
 
 @{
     ViewData["Title"] = "Rom";
+    @* CHANGED: check the role once, reuse it below *@
+    var isAdmin = User.IsInRole("Admin");
 }
 
 <h1>Studierom</h1>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Legg til nytt rom</a>
-</p>
+@* CHANGED: only admins can add rooms *@
+@if (isAdmin)
+{
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Legg til nytt rom</a>
+    </p>
+}
 
 <table class="table">
-   <thead>
+    <thead>
     <tr>
         <th>Navn</th>
         <th>Bygning</th>
@@ -20,8 +26,8 @@
         <th>Utstyr</th>
         <th></th>
     </tr>
-</thead>
-<tbody>
+    </thead>
+    <tbody>
     @foreach (var room in Model)
     {
         <tr>
@@ -31,11 +37,22 @@
             <td>@room.Capacity</td>
             <td>@room.Equipment</td>
             <td>
-                <a asp-action="Details" asp-route-id="@room.Id">Detaljer</a> |
-                <a asp-action="Edit" asp-route-id="@room.Id">Rediger</a> |
-                <a asp-action="Delete" asp-route-id="@room.Id">Slett</a>
+                <a asp-action="Details" asp-route-id="@room.Id">Detaljer</a>
+
+                @* CHANGED: edit/delete only for admins, Book for everyone else *@
+                @if (isAdmin)
+                {
+                    @:| <a asp-action="Edit" asp-route-id="@room.Id">Rediger</a>
+                    @:| <a asp-action="Delete" asp-route-id="@room.Id">Slett</a>
+                }
+                else
+                {
+                    @* Guests are redirected to login because Create has [Authorize] *@
+                    <a asp-controller="StudySession" asp-action="Create" asp-route-roomId="@room.Id"
+                       class="btn btn-sm btn-primary ms-2">Book</a>
+                }
             </td>
         </tr>
     }
-</tbody>
+    </tbody>
 </table>

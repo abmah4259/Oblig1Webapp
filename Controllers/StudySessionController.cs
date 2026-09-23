@@ -51,12 +51,19 @@ namespace StudyRoom.Controllers
             return View(session);
         }
 
-        // GET: StudySession/Create
+        // GET: StudySession/Create?roomId={id}
+        // roomId is optional; when coming from the room list, that room is preselected
         [Authorize]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(Guid? roomId)
         {
-            await PopulateRoomsViewBagAsync();
-            return View();
+            await PopulateRoomsViewBagAsync(roomId);
+
+            var session = new StudySession();
+            if (roomId.HasValue)
+            {
+                session.RoomId = roomId.Value;
+            }
+            return View(session);
         }
 
         // POST: StudySession/Create

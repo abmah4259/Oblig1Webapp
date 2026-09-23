@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Romdetaljer";
+    @* CHANGED: check the role once *@
+    var isAdmin = User.IsInRole("Admin");
 }
 
 <h1>Romdetaljer</h1>
@@ -13,6 +15,10 @@
     <dt class="col-sm-2">Bygning</dt>
     <dd class="col-sm-10">@Model.Building</dd>
 
+    @* CHANGED: room type was missing *@
+    <dt class="col-sm-2">Romtype</dt>
+    <dd class="col-sm-10">@Model.RoomType</dd>
+
     <dt class="col-sm-2">Kapasitet</dt>
     <dd class="col-sm-10">@Model.Capacity</dd>
 
@@ -20,5 +26,16 @@
     <dd class="col-sm-10">@Model.Equipment</dd>
 </dl>
 
-<a asp-action="Edit" asp-route-id="@Model.Id">Rediger</a> |
-<a asp-action="Index">Tilbake til listen</a>
+@* CHANGED: admins manage the room, everyone else can book it *@
+@if (isAdmin)
+{
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary">Rediger</a>
+    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Slett</a>
+}
+else
+{
+    <a asp-controller="StudySession" asp-action="Create" asp-route-roomId="@Model.Id"
+       class="btn btn-primary">Book dette rommet</a>
+}
+
+<a asp-action="Index" class="btn btn-link">Tilbake til listen</a>

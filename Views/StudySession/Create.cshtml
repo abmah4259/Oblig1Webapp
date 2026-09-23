@@ -7,11 +7,12 @@
 <h1>Book studieøkt</h1>
 
 <form asp-action="Create" method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div asp-validation-summary="All" class="text-danger"></div>
 
     <div class="form-group">
-        <label>Rom</label>
+        <label asp-for="RoomId">Rom</label>
         <select asp-for="RoomId" asp-items="ViewBag.Rooms" class="form-control"></select>
+        <span asp-validation-for="RoomId" class="text-danger"></span>
     </div>
 
     <div class="form-group">
@@ -23,6 +24,7 @@
     <div class="form-group">
         <label asp-for="Topic"></label>
         <input asp-for="Topic" class="form-control" />
+        <span asp-validation-for="Topic" class="text-danger"></span>
     </div>
 
     <div class="form-group">
@@ -46,3 +48,7 @@
     <button type="submit" class="btn btn-primary">Book</button>
     <a asp-action="Index" class="btn btn-secondary">Avbryt</a>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
