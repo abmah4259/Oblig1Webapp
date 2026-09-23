@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\helen\\StudyRoomBooker\\StudyRoom.csproj": {}
+    "/Users/abya/Documents/StudyRoomBooker/StudyRoom.csproj": {}
   },
   "projects": {
-    "C:\\Users\\helen\\StudyRoomBooker\\StudyRoom.csproj": {
+    "/Users/abya/Documents/StudyRoomBooker/StudyRoom.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\helen\\StudyRoomBooker\\StudyRoom.csproj",
+        "projectUniqueName": "/Users/abya/Documents/StudyRoomBooker/StudyRoom.csproj",
         "projectName": "StudyRoom",
-        "projectPath": "C:\\Users\\helen\\StudyRoomBooker\\StudyRoom.csproj",
-        "packagesPath": "C:\\Users\\helen\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\helen\\StudyRoomBooker\\obj\\",
+        "projectPath": "/Users/abya/Documents/StudyRoomBooker/StudyRoom.csproj",
+        "packagesPath": "/Users/abya/.nuget/packages/",
+        "outputPath": "/Users/abya/Documents/StudyRoomBooker/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\helen\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/Users/abya/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
@@ -38,7 +38,7 @@
           "auditLevel": "low",
           "auditMode": "all"
         },
-        "SdkAnalysisLevel": "10.0.200"
+        "SdkAnalysisLevel": "10.0.100"
       },
       "frameworks": {
         "net10.0": {
@@ -88,7 +88,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.204/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.103/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.AspNetCore": "(,10.0.32767]",
             "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",
