@@ -1,8 +1,72 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Hjem";
+    var isLoggedIn = User.Identity?.IsAuthenticated ?? false;
+    var isAdmin = User.IsInRole("Admin");
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@* Hero section *@
+<div class="p-5 mb-4 bg-light rounded-3 text-center">
+    <h1 class="display-5 fw-bold">StudyRoom</h1>
+    <p class="fs-5 text-muted col-md-8 mx-auto">
+        Book studierom på campus, finn studiegrupper i ditt fag og bli med på økter –
+        uten dobbeltbookinger.
+    </p>
+
+    @* Call to action depends on who is logged in *@
+    @if (!isLoggedIn)
+    {
+        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary btn-lg me-2">Logg inn</a>
+        <a asp-controller="Rooms" asp-action="Index" class="btn btn-outline-secondary btn-lg">Se rom</a>
+    }
+    else if (isAdmin)
+    {
+        <a asp-controller="Rooms" asp-action="Index" class="btn btn-primary btn-lg">Administrer rom</a>
+    }
+    else
+    {
+        <a asp-controller="Rooms" asp-action="Index" class="btn btn-primary btn-lg me-2">Finn og book rom</a>
+        <a asp-controller="StudySession" asp-action="Index" class="btn btn-outline-primary btn-lg">Se studieøkter</a>
+    }
+</div>
+
+@* Feature cards *@
+<div class="row g-4 text-center">
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <div class="fs-1">🏫</div>
+                <h5 class="card-title mt-2">Finn rom</h5>
+                <p class="card-text text-muted">
+                    Se alle grupperom, seminarrom og saler i P32, P35 og P48 med kapasitet og utstyr.
+                </p>
+                <a asp-controller="Rooms" asp-action="Index" class="btn btn-outline-primary">Til rommene</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <div class="fs-1">📅</div>
+                <h5 class="card-title mt-2">Book en økt</h5>
+                <p class="card-text text-muted">
+                    Velg rom, fag og tidspunkt. Systemet stopper overlappende bookinger automatisk.
+                </p>
+                <a asp-controller="StudySession" asp-action="Create" class="btn btn-outline-primary">Book nå</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <div class="fs-1">👥</div>
+                <h5 class="card-title mt-2">Studer sammen</h5>
+                <p class="card-text text-muted">
+                    Bla gjennom planlagte økter og finn andre som leser det samme faget som deg.
+                </p>
+                <a asp-controller="StudySession" asp-action="Index" class="btn btn-outline-primary">Se økter</a>
+            </div>
+        </div>
+    </div>
 </div>
