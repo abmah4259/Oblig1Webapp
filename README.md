@@ -38,8 +38,3 @@ Models → Data (EF Core, SQLite) → Repositories → Services → Controllers 
 - Business rules for bookings are in `Services/StudySessionService.cs`
   (max 4 hours, no room overlap, max 3 future bookings per student, edit lock 15 min before start).
 - Global error handling and logging in `Middleware/ExceptionHandlingMiddleware.cs`.
-
-## Use of AI and external code
-[Beskriv kort hva dere har brukt AI eller kodesnutter til, og hvilke kilder.
-Eksempel: "Claude (Anthropic) was used for debugging and code review of RoomsController
-and the home page layout. All generated code was reviewed and tested by the group."]
