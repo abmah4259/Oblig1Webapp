@@ -52,16 +52,16 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-    if (app.Environment.IsDevelopment())
-    {
-        context.StudySessions.RemoveRange(context.StudySessions);
-        context.SaveChanges();
-    }
+    // Create the database and apply any pending migrations on startup,
+    // so the app runs on a fresh machine without manual EF commands
+    context.Database.Migrate();
 
+    // Seed fixed rooms and identity data (only runs if data is missing)
     DbInitializer.Seed(context);
     await DbInitializer.SeedIdentityDataAsync(scope.ServiceProvider, context);
 }
