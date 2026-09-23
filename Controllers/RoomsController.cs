@@ -2,6 +2,7 @@ using System.Linq;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using StudyRoom.Models;
 using StudyRoom.Repositories;
 
@@ -9,11 +10,21 @@ namespace StudyRoom.Controllers
 {
     public class RoomsController : Controller
     {
-        private readonly IRepository<Room> _roomRepository;
+        // Upper limit on rooms, keeps the scope of the room inventory small
+        private const int MaxRooms = 20;
 
-        public RoomsController(IRepository<Room> roomRepository)
+        private readonly IRepository<Room> _roomRepository;
+        private readonly IStudySessionRepository _sessionRepository;
+        private readonly ILogger<RoomsController> _logger;
+
+        public RoomsController(
+            IRepository<Room> roomRepository,
+            IStudySessionRepository sessionRepository,
+            ILogger<RoomsController> logger)
         {
             _roomRepository = roomRepository;
+            _sessionRepository = sessionRepository;
+            _logger = logger;
         }
 
         // GET: Rooms
@@ -29,6 +40,7 @@ namespace StudyRoom.Controllers
             var room = await _roomRepository.GetByIdAsync(id);
             if (room == null)
             {
+                _logger.LogWarning("Room {RoomId} not found (Details)", id);
                 return NotFound();
             }
             return View(room);
@@ -49,9 +61,9 @@ namespace StudyRoom.Controllers
         public async Task<IActionResult> Create([Bind("Name,Building,RoomType,Capacity")] Room room, Equipment[] selectedEquipment)
         {
             var allRooms = await _roomRepository.GetAllAsync();
-            if (allRooms.Count() >= 10)
+            if (allRooms.Count() >= MaxRooms)
             {
-                ModelState.AddModelError(string.Empty, "Maks antall rom (10) er allerede nådd.");
+                ModelState.AddModelError(string.Empty, $"Maks antall rom ({MaxRooms}) er allerede nådd.");
             }
 
             var combinedEquipment = CombineEquipment(selectedEquipment);
@@ -62,6 +74,7 @@ namespace StudyRoom.Controllers
 
             if (!ModelState.IsValid)
             {
+                _logger.LogWarning("Invalid room create attempt for '{RoomName}'", room.Name);
                 PopulateEnumViewBags();
                 return View(room);
             }
@@ -69,9 +82,21 @@ namespace StudyRoom.Controllers
             room.Id = Guid.NewGuid();
             room.Equipment = combinedEquipment;
 
-            await _roomRepository.AddAsync(room);
-            await _roomRepository.SaveChangesAsync();
+            try
+            {
+                await _roomRepository.AddAsync(room);
+                await _roomRepository.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError(ex, "Database error while creating room '{RoomName}'", room.Name);
+                ModelState.AddModelError(string.Empty, "Kunne ikke lagre rommet. Prøv igjen.");
+                PopulateEnumViewBags();
+                return View(room);
+            }
 
+            _logger.LogInformation("Room {RoomId} '{RoomName}' created", room.Id, room.Name);
+            TempData["SuccessMessage"] = $"Rommet {room.Name} ble opprettet.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -82,6 +107,7 @@ namespace StudyRoom.Controllers
             var room = await _roomRepository.GetByIdAsync(id);
             if (room == null)
             {
+                _logger.LogWarning("Room {RoomId} not found (Edit)", id);
                 return NotFound();
             }
             PopulateEnumViewBags();
@@ -96,6 +122,7 @@ namespace StudyRoom.Controllers
         {
             if (id != room.Id)
             {
+                _logger.LogWarning("Route id {RouteId} does not match room id {RoomId}", id, room.Id);
                 return NotFound();
             }
 
@@ -107,15 +134,29 @@ namespace StudyRoom.Controllers
 
             if (!ModelState.IsValid)
             {
+                _logger.LogWarning("Invalid room edit attempt for room {RoomId}", room.Id);
                 PopulateEnumViewBags();
                 return View(room);
             }
 
             room.Equipment = combinedEquipment;
 
-            _roomRepository.Update(room);
-            await _roomRepository.SaveChangesAsync();
+            try
+            {
+                _roomRepository.Update(room);
+                await _roomRepository.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                // Also covers the room having been deleted by someone else meanwhile
+                _logger.LogError(ex, "Database error while updating room {RoomId}", room.Id);
+                ModelState.AddModelError(string.Empty, "Kunne ikke lagre endringene. Rommet kan ha blitt slettet.");
+                PopulateEnumViewBags();
+                return View(room);
+            }
 
+            _logger.LogInformation("Room {RoomId} updated", room.Id);
+            TempData["SuccessMessage"] = $"Rommet {room.Name} ble oppdatert.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -126,8 +167,17 @@ namespace StudyRoom.Controllers
             var room = await _roomRepository.GetByIdAsync(id);
             if (room == null)
             {
+                _logger.LogWarning("Room {RoomId} not found (Delete)", id);
                 return NotFound();
             }
+
+            // Stop early so the admin is not shown a confirm page for a delete that will fail
+            if (await HasBookingsAsync(id))
+            {
+                TempData["ErrorMessage"] = $"Rommet {room.Name} har bookinger og kan ikke slettes.";
+                return RedirectToAction(nameof(Index));
+            }
+
             return View(room);
         }
 
@@ -138,12 +188,42 @@ namespace StudyRoom.Controllers
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var room = await _roomRepository.GetByIdAsync(id);
-            if (room != null)
+            if (room == null)
+            {
+                _logger.LogWarning("Room {RoomId} not found (DeleteConfirmed)", id);
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Re-check on the server: a booking may have been made after the confirm page was shown.
+            // Rooms use DeleteBehavior.Restrict, so deleting a booked room would throw.
+            if (await HasBookingsAsync(id))
+            {
+                _logger.LogWarning("Blocked delete of room {RoomId}: room has bookings", id);
+                TempData["ErrorMessage"] = $"Rommet {room.Name} har bookinger og kan ikke slettes.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
             {
                 _roomRepository.Delete(room);
                 await _roomRepository.SaveChangesAsync();
             }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError(ex, "Database error while deleting room {RoomId}", id);
+                TempData["ErrorMessage"] = "Kunne ikke slette rommet. Prøv igjen.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            _logger.LogInformation("Room {RoomId} '{RoomName}' deleted", id, room.Name);
+            TempData["SuccessMessage"] = $"Rommet {room.Name} ble slettet.";
             return RedirectToAction(nameof(Index));
+        }
+
+        private async Task<bool> HasBookingsAsync(Guid roomId)
+        {
+            var sessions = await _sessionRepository.GetSessionsByRoomAsync(roomId);
+            return sessions.Any();
         }
 
         private void PopulateEnumViewBags()
@@ -154,6 +234,7 @@ namespace StudyRoom.Controllers
                 .Cast<Equipment>()
                 .Where(e => e != Equipment.None);
 
+            // Rules serialized to JSON so the view's JavaScript can mirror them (UX only, server stays authoritative)
             ViewBag.RoomTypeRulesJson = JsonSerializer.Serialize(
                 RoomRules.AllowedRoomTypes.ToDictionary(
                     kv => ((int)kv.Key).ToString(),
@@ -165,6 +246,7 @@ namespace StudyRoom.Controllers
                     kv => kv.Value.Select(v => v.ToString())));
         }
 
+        // Combines the selected checkboxes into one [Flags] value
         private static Equipment CombineEquipment(Equipment[] selected)
         {
             var combined = Equipment.None;

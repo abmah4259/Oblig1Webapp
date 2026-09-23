@@ -8,6 +8,16 @@
 
 <h1>Studierom</h1>
 
+@* CHANGED: feedback after create/update/delete (set by RoomsController via TempData) *@
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
 @* CHANGED: only admins can add rooms *@
 @if (isAdmin)
 {
