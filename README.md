@@ -1,7 +1,7 @@
 # StudyRoom – Study Room Booking Tool
 
 ITPE3200 Web Applications, 2026H – Mandatory Assignment 1
-Group: 
+Group: AHAG
 Members: Abbay, Helene, Aman og Gziam
 
 ## About
