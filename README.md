@@ -2,7 +2,7 @@
 
 ITPE3200 Web Applications, 2026H – Mandatory Assignment 1
 Group: 
-Members: Abbay, Helene, Aman
+Members: Abbay, Helene, Aman og Gziam
 
 ## About
 A web application where students book study rooms on campus and join study sessions.
@@ -38,3 +38,7 @@ Models → Data (EF Core, SQLite) → Repositories → Services → Controllers 
 - Business rules for bookings are in `Services/StudySessionService.cs`
   (max 4 hours, no room overlap, max 3 future bookings per student, edit lock 15 min before start).
 - Global error handling and logging in `Middleware/ExceptionHandlingMiddleware.cs`.
+
+## AI and external code
+Claude (Anthropic) was used for debugging, code review and generating code.
+All generated code was reviewed, tested and adapted by the group.
